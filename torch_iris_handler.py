@@ -1,6 +1,5 @@
 import torch
 import torch.nn.functional as F
-import json
 
 class PyTorchIrisHandler:
     def __init__(self):
