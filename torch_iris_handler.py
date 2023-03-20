@@ -1,11 +1,13 @@
 import torch
 import torch.nn.functional as F
+import json
 
 class PyTorchIrisHandler:
     def __init__(self):
         # Load the PyTorch model
-        self.model = torch.load('/home/jovyan/iris/model-archiver/torch_iris.pth')
+        self.model = torch.load('/home/model-server/pytorch-serve/torch_iris.pth')
         self.model.eval()
+        print("model loaded successfully")
         
     def preprocess(self, data):
         # Parse the input data
