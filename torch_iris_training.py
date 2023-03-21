@@ -53,4 +53,4 @@ for epoch in range(EPOCHS):
         
 print("last 5 epochs accuracy = ", accuracy_list[-5:])
 
-torch.save(model, '/home/jovyan/iris/model-archiver/torch_iris.pth')
+torch.save(model, './model.pt')
