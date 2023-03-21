@@ -4,6 +4,7 @@ import numpy
 import torch
 import torch.nn.functional as F
 from ts.torch_handler.base_handler import BaseHandler
+from torch_iris import PytorchIrisModel
 
 class PyTorchIrisHandler(BaseHandler):
     def __init__(self):
@@ -28,7 +29,8 @@ class PyTorchIrisHandler(BaseHandler):
         if not os.path.isfile(model_pt_path):
             raise RuntimeError("Missing the model.pt file")
         
-        self.model = torch.load(model_pt_path)
+        self.model = PytorchIrisModel()
+        self.model.load_state_dict(torch.load(model_pt_path))
         self.model.eval()
         print("model loaded successfully")
         self.initialized = True
@@ -38,17 +40,22 @@ class PyTorchIrisHandler(BaseHandler):
         print("print original data var", data)
         data = json.loads(data[0]["data"].decode("utf-8"))
         print("-------- print data after parsing -------- \n", data)
-        input_data = torch.tensor(data).float()
-        return input_data  # return은 torch의 tensor형으로 변형해서
+        preprocessed_data = torch.tensor(data).float()
+        return preprocessed_data  # return은 torch의 tensor형으로 변형해서
     
-    def inference(self, input_data):
+    def inference(self, model_input):
         print("inference start")
         # Make predictions
         with torch.no_grad():
             output = self.model(input_data)
-        return inference_output
+        return model_output 
     
     def postprocess(self, inference_output):
         # Convert PyTorch output tensor to a NumPy array
-        output = inference_output.numpy().tolist()
-        return {'output': output}
+        postprocess_output = inference_output.numpy().tolist()
+        return postprocess_output
+    
+    def handle(self, data, context):
+        model_input = self.preprocess(data)
+        model_output = self.inference(model_input)
+        return self.postprocess(model_output)

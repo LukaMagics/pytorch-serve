@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 import torch.nn as nn
 
-class Model(nn.Module):
+class PytorchIrisModel(nn.Module):
     def __init__(self, input_dim=4):
         super().__init__()
         self.layer1 = nn.Linear(input_dim, 50)

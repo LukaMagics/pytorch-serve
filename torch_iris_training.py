@@ -53,4 +53,4 @@ for epoch in range(EPOCHS):
         
 print("last 5 epochs accuracy = ", accuracy_list[-5:])
 
-torch.save(model, './model.pt')
+torch.save(model.state_dict(), './model.pt')
