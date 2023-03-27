@@ -46,7 +46,8 @@ class PyTorchIrisHandler(BaseHandler):
         data = json.loads(json_str)
 
         # Access the list of instances
-        preprocessed_data = data['instances']
+        instances = data['instances']
+        preprocessed_data = torch.tensor(instances).float()
 
         return preprocessed_data  # return은 torch의 tensor형으로 변형해서
     
@@ -55,21 +56,20 @@ class PyTorchIrisHandler(BaseHandler):
         # Make predictions
         inference_output = []
         with torch.no_grad():
-            for i in range(len(preprocessed_data)):
-                model_input = torch.tensor([preprocessed_data[i]]).float()
-                model_output = self.model(model_input)
-
-                output = {
-                    "input": preprocessed_data[i],
-                    "output": model_output.tolist()[0]
-                }
-                inference_output.append(json.dumps(output))
+            model_input = preprocessed_data
+            model_output = self.model(model_input)
+            inference_output = model_output.argmax(-1).tolist()
                 
         return inference_output
     
     def postprocess(self, inference_output):
         # Convert PyTorch output tensor to a NumPy array
-        postprocess_output = inference_output
+        iris_dict = {0 : 'Iris-setosa', 1:'Iris-versicolor', 2:'Iris-virginica'}
+        labeled_output = [iris_dict[o] for o in inference_output]
+        output_dict = {
+            "output": labeled_output
+        }
+        postprocess_output = json.dumps(output_dict)
         return postprocess_output
     
     def handle(self, data, context):
