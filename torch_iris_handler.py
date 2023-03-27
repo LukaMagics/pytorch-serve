@@ -48,9 +48,6 @@ class PyTorchIrisHandler(BaseHandler):
         # Access the list of instances
         preprocessed_data = data['instances']
 
-        # preprocessed_data = json.loads(data[0].get("instances"))
-        print("-------- print preprocessed_data -------- \n", preprocessed_data)
-        preprocessed_data = torch.tensor(preprocessed_data).float()
         return preprocessed_data  # return은 torch의 tensor형으로 변형해서
     
     def inference(self, preprocessed_data):
@@ -59,9 +56,10 @@ class PyTorchIrisHandler(BaseHandler):
         inference_output = []
         with torch.no_grad():
             for i in range(len(preprocessed_data)):
+                model_input = torch.tensor([preprocessed_data[i]]).float()
                 output = {
                     "input": preprocessed_data[i],
-                    "output": self.model(preprocessed_data[i])
+                    "output": self.model(model_input)
                 }
                 inference_output.append(json.dumps(output))
                 
