@@ -57,9 +57,11 @@ class PyTorchIrisHandler(BaseHandler):
         with torch.no_grad():
             for i in range(len(preprocessed_data)):
                 model_input = torch.tensor([preprocessed_data[i]]).float()
+                model_output = self.model(model_input)
+
                 output = {
                     "input": preprocessed_data[i],
-                    "output": self.model(model_input)
+                    "output": model_output.tolist()[0]
                 }
                 inference_output.append(json.dumps(output))
                 
