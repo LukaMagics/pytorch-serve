@@ -53,22 +53,29 @@ class PyTorchIrisHandler(BaseHandler):
         preprocessed_data = torch.tensor(preprocessed_data).float()
         return preprocessed_data  # return은 torch의 tensor형으로 변형해서
     
-    def inference(self, model_input):
+    def inference(self, preprocessed_data):
         print("inference start")
         # Make predictions
+        inference_output = []
         with torch.no_grad():
-            model_output = self.model(model_input)
-        return model_output 
+            for i in range(len(preprocessed_data)):
+                output = {
+                    "input": preprocessed_data[i],
+                    "output": self.model(preprocessed_data[i])
+                }
+                inference_output.append(json.dumps(output))
+                
+        return inference_output
     
     def postprocess(self, inference_output):
         # Convert PyTorch output tensor to a NumPy array
-        postprocess_output = inference_output.numpy().tolist()
+        postprocess_output = inference_output
         return postprocess_output
     
     def handle(self, data, context):
         if not self.initialized:
           self.initialized(context)
         
-        model_input = self.preprocess(data)
-        model_output = self.inference(model_input)
-        return self.postprocess(model_output)
+        preprocessed_data = self.preprocess(data)
+        inference_output = self.inference(preprocessed_data)
+        return self.postprocess(inference_output)
