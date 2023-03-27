@@ -37,13 +37,16 @@ class PyTorchIrisHandler(BaseHandler):
         
     def preprocess(self, data):  # data는 torchserve에서 자동할당해줌. data (list): List of the data from the request input.
         # Parse the input data
-        print("print original data var", data)
+        print("print data :", data)
         #data = json.loads(data[0].get("body"))
-        preprocessed_data = json.loads(data[0].get("instances"))
-        if preprocessed_data is None:
-            preprocessed_data = data[0].get("body")
-        print("-------- print data after parsing -------- \n", data)
-        preprocessed_data = torch.tensor(data).float()
+
+        with open(data, 'r') as f:
+            preprocessed_data = json.load(f)
+        instances = preprocessed_data['instances']
+
+        # preprocessed_data = json.loads(data[0].get("instances"))
+        print("-------- print instances -------- \n", instances)
+        preprocessed_data = torch.tensor(instances).float()
         return preprocessed_data  # return은 torch의 tensor형으로 변형해서
     
     def inference(self, model_input):
@@ -59,6 +62,9 @@ class PyTorchIrisHandler(BaseHandler):
         return postprocess_output
     
     def handle(self, data, context):
+        if not self.initialized:
+          self.initialized(context)
+        
         model_input = self.preprocess(data)
         model_output = self.inference(model_input)
         return self.postprocess(model_output)
