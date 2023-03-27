@@ -36,6 +36,7 @@ class PyTorchIrisHandler(BaseHandler):
         self.initialized = True
         
     def preprocess(self, data):  # data는 torchserve에서 자동할당해줌. data (list): List of the data from the request input.
+        print("preprocess start")
         # Parse the input data
         print("print data :", data)
         #data = json.loads(data[0].get("body"))
@@ -48,6 +49,7 @@ class PyTorchIrisHandler(BaseHandler):
         # Access the list of instances
         instances = data['instances']
         preprocessed_data = torch.tensor(instances).float()
+        print("preprocess end")
 
         return preprocessed_data  # return은 torch의 tensor형으로 변형해서
     
@@ -59,17 +61,20 @@ class PyTorchIrisHandler(BaseHandler):
             model_input = preprocessed_data
             model_output = self.model(model_input)
             inference_output = model_output.argmax(-1).tolist()
-                
+        print("inference end")
+
         return inference_output
     
     def postprocess(self, inference_output):
+        print("postprocess start")
         # Convert PyTorch output tensor to a NumPy array
         iris_dict = {0 : 'Iris-setosa', 1:'Iris-versicolor', 2:'Iris-virginica'}
         labeled_output = [iris_dict[o] for o in inference_output]
-        output_dict = {
+        postprocess_output = {
             "output": labeled_output
         }
-        postprocess_output = json.dumps(output_dict)
+        print("postprocess_output : ", postprocess_output)
+        print("postprocess end")
         return postprocess_output
     
     def handle(self, data, context):
