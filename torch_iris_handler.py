@@ -39,14 +39,18 @@ class PyTorchIrisHandler(BaseHandler):
         # Parse the input data
         print("print data :", data)
         #data = json.loads(data[0].get("body"))
+        # Extract the JSON string from the bytearray
+        json_str = data[0]['body'].decode('utf-8')
 
-        with open(data, 'r') as f:
-            preprocessed_data = json.load(f)
-        instances = preprocessed_data['instances']
+        # Parse the JSON string into a Python dictionary
+        data = json.loads(json_str)
+
+        # Access the list of instances
+        preprocessed_data = data['instances']
 
         # preprocessed_data = json.loads(data[0].get("instances"))
-        print("-------- print instances -------- \n", instances)
-        preprocessed_data = torch.tensor(instances).float()
+        print("-------- print preprocessed_data -------- \n", preprocessed_data)
+        preprocessed_data = torch.tensor(preprocessed_data).float()
         return preprocessed_data  # return은 torch의 tensor형으로 변형해서
     
     def inference(self, model_input):
