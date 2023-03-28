@@ -16,8 +16,8 @@ class PyTorchIrisHandler(BaseHandler):
     # initialize, preprocess 등 BaseHandler의 메소드 명과 동일한 경우 상속 후 override되어 부모클래스의 메소드는 무시되어 재정의됨
     def initialize(self, context): # context는 torchserve에서 자동할당해줌.
         # Load the PyTorch model
+        print("initialize start")
         self._context = context
-        print("------------- print context ---------- \n", context)
         self.manifest = context.manifest
         properties = context.system_properties
         model_dir = properties.get('model_dir')  # model_dir == --model-store 경로
@@ -32,13 +32,12 @@ class PyTorchIrisHandler(BaseHandler):
         self.model = PytorchIrisModel()
         self.model.load_state_dict(torch.load(model_pt_path))
         self.model.eval()
-        print("model loaded successfully")
+        print("initialize end")
         self.initialized = True
         
     def preprocess(self, data):  # data는 torchserve에서 자동할당해줌. data (list): List of the data from the request input.
         print("preprocess start")
         # Parse the input data
-        print("print data :", data)
         #data = json.loads(data[0].get("body"))
         # Extract the JSON string from the bytearray
         json_str = data[0]['body'].decode('utf-8')
