@@ -73,7 +73,7 @@ class PyTorchIrisHandler(BaseHandler):
         postprocess_output = {
             "output": labeled_output
         }
-        postprocess_output = list(postprocess_output)
+        postprocess_output = [postprocess_output]
         print("postprocess_output : ", postprocess_output)
         print("postprocess end")
         return postprocess_output
