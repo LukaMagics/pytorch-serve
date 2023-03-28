@@ -73,6 +73,7 @@ class PyTorchIrisHandler(BaseHandler):
         postprocess_output = {
             "output": labeled_output
         }
+        postprocess_output = list(postprocess_output)
         print("postprocess_output : ", postprocess_output)
         print("postprocess end")
         return postprocess_output
@@ -83,4 +84,5 @@ class PyTorchIrisHandler(BaseHandler):
         
         preprocessed_data = self.preprocess(data)
         inference_output = self.inference(preprocessed_data)
-        return self.postprocess(inference_output)
+        final_output = self.postprocess(inference_output)
+        return final_output
